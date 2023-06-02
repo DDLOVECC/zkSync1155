@@ -5,9 +5,8 @@ This project demonstrates a basic Hardhat use case. It comes with a sample contr
 Try running some of the following tasks:
 
 ```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.ts
+npx hardhat compile
+npx hardhat deploy-zksync
+npx hardhat verify --network zkTestnet 0x0BbDeDF09E62c2fBf8c16e972fE73
+b0D7293667A
 ```
