@@ -4,19 +4,22 @@ pragma solidity ^0.8.18;
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Burnable.sol";
 
-contract AiYueNFTExchange is ERC1155, ERC1155Burnable{
+contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
     struct InitialOwner {
         address owner;
         uint256 amount;
     }
+
     struct CurrentOwner {
         address owner;
         uint256 amount;
     }
+
     struct Vote {
         address voter;
         uint256 number;
     }
+
     mapping(uint256 => InitialOwner) public initialOwners;
     mapping(uint256 => CurrentOwner[]) public tokenIdCurrentOwner;
     mapping(uint256 => Vote[]) public voteInfo;
@@ -133,6 +136,32 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable{
             realVoteNumber += voteList[i].number;
         }
         return (all, realVoteNumber);
+    }
+
+    function getVoteInfoResult(uint256 id) public view returns (bool){
+        uint256 all = initialOwners[id].amount;
+        uint256 realVoteNumber = 0;
+        bool result = false;
+        Vote[] memory voteList = voteInfo[id];
+        for (uint i = 0; i < voteList.length; i++) {
+            realVoteNumber += voteList[i].number;
+        }
+        uint256 per = calculatePercentage(realVoteNumber, all);
+        uint256 standard = calculatePercentage(2, 3);
+        if (per > standard) {
+            result = true;
+        }
+        if (per <= standard) {
+            result = false;
+        }
+        return result;
+    }
+
+
+    function calculatePercentage(uint256 numerator, uint256 denominator) public pure returns (uint256) {
+        require(denominator != 0, "Denominator must be a non-zero value");
+        uint256 percentage = (numerator * 100) / denominator;
+        return percentage;
     }
 
 
