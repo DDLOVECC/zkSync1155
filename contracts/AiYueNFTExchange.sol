@@ -3,8 +3,9 @@ pragma solidity ^0.8.18;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Burnable.sol";
-
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
+
     struct InitialOwner {
         address owner;
         uint256 amount;
@@ -19,11 +20,12 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
         address voter;
         uint256 number;
     }
-
+    using ECDSA for bytes32;
     mapping(uint256 => InitialOwner) public initialOwners;
     mapping(uint256 => CurrentOwner[]) public tokenIdCurrentOwner;
     mapping(uint256 => Vote[]) public voteInfo;
-
+    mapping(bytes32 => bool)  executed;
+    mapping(address => mapping(address => bool)) private operatorApprovals;
     constructor() ERC1155("") {}
     function setURI(string memory newuri) public {
         _setURI(newuri);
@@ -37,7 +39,7 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
     }
 
     function transferFrom(address from, address to, uint256 id, uint256 amount, bytes memory data) public {
-        safeTransferFrom(from, to, id, amount, data);
+        _safeTransferFrom(from, to, id, amount, data);
         changeTokenIdAmount(from, to, id, amount);
     }
 
@@ -125,7 +127,16 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
             number : _number
             });
         voteInfo[id].push(newVote);
-        setApprovalForAll(operator, true);
+        approvalForAll(_voter,operator, true);
+    }
+
+    function approvalForAll(address owner, address operator, bool approved) internal virtual {
+        operatorApprovals[owner][operator] = approved;
+        emit ApprovalForAll(owner, operator, approved);
+    }
+
+    function approvedForAll(address account, address operator) public view virtual  returns (bool) {
+        return operatorApprovals[account][operator];
     }
 
     function getVoteInfo(uint256 id) public view returns (uint256, uint256){
@@ -157,11 +168,37 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
         return result;
     }
 
-
     function calculatePercentage(uint256 numerator, uint256 denominator) public pure returns (uint256) {
         require(denominator != 0, "Denominator must be a non-zero value");
         uint256 percentage = (numerator * 100) / denominator;
         return percentage;
+    }
+
+
+    function deposit() public payable {
+    }
+
+    function withdraw(address payable rec, uint256 amount) public {
+        address contractAddress = address(this);
+        require(contractAddress.balance > amount, "less amount to withdraw");
+        rec.transfer(amount);
+    }
+
+    function getBalance() public view returns (uint256) {
+        return address(this).balance;
+    }
+
+    function getSigner(address sender,uint nonce, bytes calldata _data, bytes memory signature) public view returns(address) {
+        bytes32 messageHash = getHash(sender,nonce,_data);
+        bytes32 signedMessageHash = messageHash.toEthSignedMessageHash();
+        // Require that this signature hasn't already been executed
+        require(!executed[signedMessageHash], "Already executed!");
+        address signer = signedMessageHash.recover(signature);
+        return signer;
+    }
+
+    function getHash(address sender, uint nonce, bytes calldata _data) public pure returns (bytes32) {
+        return keccak256(abi.encodePacked(sender, nonce, _data));
     }
 
 
