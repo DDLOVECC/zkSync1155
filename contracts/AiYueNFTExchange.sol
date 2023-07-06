@@ -4,6 +4,7 @@ pragma solidity ^0.8.18;
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Burnable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+
 contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
 
     struct InitialOwner {
@@ -127,15 +128,15 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
             number : _number
             });
         voteInfo[id].push(newVote);
-        approvalForAll(_voter,operator, true);
+        approvalForAll(_voter, operator, true);
     }
 
-    function approvalForAll(address owner, address operator, bool approved) internal virtual {
+    function approvalForAll(address owner, address operator, bool approved) public  virtual {
         operatorApprovals[owner][operator] = approved;
         emit ApprovalForAll(owner, operator, approved);
     }
 
-    function approvedForAll(address account, address operator) public view virtual  returns (bool) {
+    function approvedForAll(address account, address operator) public view virtual returns (bool) {
         return operatorApprovals[account][operator];
     }
 
@@ -188,8 +189,8 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
         return address(this).balance;
     }
 
-    function getSigner(address sender,uint nonce, bytes calldata _data, bytes memory signature) public view returns(address) {
-        bytes32 messageHash = getHash(sender,nonce,_data);
+    function getSigner(address sender, uint nonce, bytes calldata _data, bytes memory signature) public view returns (address) {
+        bytes32 messageHash = getHash(sender, nonce, _data);
         bytes32 signedMessageHash = messageHash.toEthSignedMessageHash();
         // Require that this signature hasn't already been executed
         require(!executed[signedMessageHash], "Already executed!");
