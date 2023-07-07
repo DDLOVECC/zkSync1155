@@ -39,8 +39,10 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
         initCurrentOwner(account, id, amount);
     }
 
+
+
     function transferFrom(address from, address to, uint256 id, uint256 amount, bytes memory data) public {
-        _safeTransferFrom(from, to, id, amount, data);
+        safeTransferFrom(from, to, id, amount, data);
         changeTokenIdAmount(from, to, id, amount);
     }
 
@@ -128,16 +130,18 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
             number : _number
             });
         voteInfo[id].push(newVote);
-        approvalForAll(_voter, operator, true);
+        _setApprovalForAll(_voter, operator, true);
     }
 
-    function approvalForAll(address owner, address operator, bool approved) public  virtual {
-        operatorApprovals[owner][operator] = approved;
-        emit ApprovalForAll(owner, operator, approved);
+    function approvalForAll(address owner, address operator) public  virtual {
+//        operatorApprovals[owner][operator] = approved;
+//        emit ApprovalForAll(owner, operator, approved);
+        _setApprovalForAll(owner, operator, true);
     }
 
     function approvedForAll(address account, address operator) public view virtual returns (bool) {
-        return operatorApprovals[account][operator];
+        //return operatorApprovals[account][operator];
+        return isApprovedForAll(account,operator);
     }
 
     function getVoteInfo(uint256 id) public view returns (uint256, uint256){
