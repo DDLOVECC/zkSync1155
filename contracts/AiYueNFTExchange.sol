@@ -27,9 +27,18 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
     mapping(uint256 => Vote[]) public voteInfo;
     mapping(bytes32 => bool)  executed;
     mapping(address => mapping(address => bool)) private operatorApprovals;
+    mapping(uint256 => string) private _uris;
     constructor() ERC1155("") {}
-    function setURI(string memory newuri) public {
+    function setURI(string memory newuri)  public {
         _setURI(newuri);
+    }
+
+    function uri(uint256 tokenId) override public view returns(string memory){
+        return (_uris[tokenId]);
+    }
+
+    function setTokenUri(uint256 tokenId, string memory uri) public {
+        _uris[tokenId] = uri;
     }
 
     function mint(address account, uint256 id, uint256 amount, bytes memory data) public
@@ -38,7 +47,6 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
         initOwnerAmount(account, id, amount);
         initCurrentOwner(account, id, amount);
     }
-
 
 
     function transferFrom(address from, address to, uint256 id, uint256 amount, bytes memory data) public {
@@ -133,15 +141,15 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
         _setApprovalForAll(_voter, operator, true);
     }
 
-    function approvalForAll(address owner, address operator) public  virtual {
-//        operatorApprovals[owner][operator] = approved;
-//        emit ApprovalForAll(owner, operator, approved);
+    function approvalForAll(address owner, address operator) public virtual {
+        //        operatorApprovals[owner][operator] = approved;
+        //        emit ApprovalForAll(owner, operator, approved);
         _setApprovalForAll(owner, operator, true);
     }
 
     function approvedForAll(address account, address operator) public view virtual returns (bool) {
         //return operatorApprovals[account][operator];
-        return isApprovedForAll(account,operator);
+        return isApprovedForAll(account, operator);
     }
 
     function getVoteInfo(uint256 id) public view returns (uint256, uint256){
