@@ -29,11 +29,11 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
     mapping(address => mapping(address => bool)) private operatorApprovals;
     mapping(uint256 => string) private _uris;
     constructor() ERC1155("") {}
-    function setURI(string memory newuri)  public {
+    function setURI(string memory newuri) public {
         _setURI(newuri);
     }
 
-    function uri(uint256 tokenId) override public view returns(string memory){
+    function uri(uint256 tokenId) override public view returns (string memory){
         return (_uris[tokenId]);
     }
 
@@ -41,11 +41,12 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
         _uris[tokenId] = uri;
     }
 
-    function mint(address account, uint256 id, uint256 amount, bytes memory data) public
+    function mint(address account, uint256 id, uint256 amount, string memory uri, bytes memory data) public
     {
         _mint(account, id, amount, data);
         initOwnerAmount(account, id, amount);
         initCurrentOwner(account, id, amount);
+        _uris[id] = uri;
     }
 
 
