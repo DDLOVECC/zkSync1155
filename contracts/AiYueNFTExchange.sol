@@ -28,7 +28,12 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
     mapping(bytes32 => bool)  executed;
     mapping(address => mapping(address => bool)) private operatorApprovals;
     mapping(uint256 => string) private _uris;
-    constructor() ERC1155("") {}
+    string public name;
+    string public symbol;
+    constructor(string memory _name, string memory _symbol) ERC1155("") {
+        name = _name;
+        symbol = _symbol;
+    }
     function setURI(string memory newuri) public {
         _setURI(newuri);
     }

@@ -22,4 +22,8 @@ npx hardhat verify --network zkTestnet 0xD14f4B9FD4d788E027b360A4536E8Ada9dEd0d4
 npx hardhat verify --network zkTestnet 0xe1d9196C5C9F03594D3f7A46d2ea3945Eb6D6C69
 20230727
 npx hardhat verify --network zkTestnet 0x13Cce0C98b82DB578e9Ae41716AC55619f6931a1
+20230803
+npx hardhat verify --network zkTestnet 0xB5e345dbC8beFb5811afdD97d696b609F2A8a9F5
+20230803
+npx hardhat verify --network zkTestnet 0xBd1581525AD832ea34d8Dc777832FDfF3faB9048
 ```
