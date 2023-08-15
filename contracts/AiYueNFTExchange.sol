@@ -21,12 +21,10 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
         address voter;
         uint256 number;
     }
-    using ECDSA for bytes32;
+
     mapping(uint256 => InitialOwner) public initialOwners;
     mapping(uint256 => CurrentOwner[]) public tokenIdCurrentOwner;
     mapping(uint256 => Vote[]) public voteInfo;
-    mapping(bytes32 => bool)  executed;
-    mapping(address => mapping(address => bool)) private operatorApprovals;
     mapping(uint256 => string) private _uris;
     string public name;
     string public symbol;
@@ -56,6 +54,8 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
 
 
     function transferFrom(address from, address to, uint256 id, uint256 amount, bytes memory data) public {
+        bool result = getVoteInfoExit(id, from);
+        require(result != true, "this address in vote cannot transfer");
         safeTransferFrom(from, to, id, amount, data);
         changeTokenIdAmount(from, to, id, amount);
     }
@@ -80,6 +80,7 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
             });
         tokenIdCurrentOwner[tokenId].push(currentOwner);
     }
+
 
     function changeTokenIdAmount(address _from, address _to, uint256 _tokenId, uint256 _amount) internal {
         if (getShareExit(_tokenId, _to)) {
@@ -148,13 +149,10 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
     }
 
     function approvalForAll(address owner, address operator) public virtual {
-        //        operatorApprovals[owner][operator] = approved;
-        //        emit ApprovalForAll(owner, operator, approved);
         _setApprovalForAll(owner, operator, true);
     }
 
     function approvedForAll(address account, address operator) public view virtual returns (bool) {
-        //return operatorApprovals[account][operator];
         return isApprovedForAll(account, operator);
     }
 
@@ -166,6 +164,16 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
             realVoteNumber += voteList[i].number;
         }
         return (all, realVoteNumber);
+    }
+
+    function getVoteInfoExit(uint256 id, address voter) public view returns (bool){
+        Vote[] memory voteList = voteInfo[id];
+        for (uint i = 0; i < voteList.length; i++) {
+            if (voteList[i].voter == voter) {
+                return true;
+            }
+        }
+        return false;
     }
 
     function getVoteInfoResult(uint256 id) public view returns (bool){
@@ -205,19 +213,6 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
 
     function getBalance() public view returns (uint256) {
         return address(this).balance;
-    }
-
-    function getSigner(address sender, uint nonce, bytes calldata _data, bytes memory signature) public view returns (address) {
-        bytes32 messageHash = getHash(sender, nonce, _data);
-        bytes32 signedMessageHash = messageHash.toEthSignedMessageHash();
-        // Require that this signature hasn't already been executed
-        require(!executed[signedMessageHash], "Already executed!");
-        address signer = signedMessageHash.recover(signature);
-        return signer;
-    }
-
-    function getHash(address sender, uint nonce, bytes calldata _data) public pure returns (bytes32) {
-        return keccak256(abi.encodePacked(sender, nonce, _data));
     }
 
 
