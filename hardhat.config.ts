@@ -17,6 +17,12 @@ module.exports = {
       zksync: true,
       verifyURL: 'https://zksync2-testnet-explorer.zksync.dev/contract_verification'
     },
+    zkSyncMainnet: {
+      url: "https://mainnet.era.zksync.io",
+      ethNetwork: "mainnet", // RPC URL of the network (e.g. `https://goerli.infura.io/v3/<API_KEY>`)
+      zksync: true,
+      verifyURL: 'https://zksync2-mainnet-explorer.zksync.io/contract_verification'
+    }
   },
   solidity: {
     version: "0.8.18",
