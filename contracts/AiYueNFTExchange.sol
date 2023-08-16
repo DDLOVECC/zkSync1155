@@ -46,6 +46,8 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
 
     function mint(address account, uint256 id, uint256 amount, string memory uri, bytes memory data) public
     {
+        bool result = getNftEXit(id, account);
+        require(result != true, "this id had mint");
         _mint(account, id, amount, data);
         initOwnerAmount(account, id, amount);
         initCurrentOwner(account, id, amount);
@@ -172,6 +174,13 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
             if (voteList[i].voter == voter) {
                 return true;
             }
+        }
+        return false;
+    }
+
+    function getNftEXit(uint256 id, address owner) public view returns (bool){
+        if (initialOwners[id].owner == owner) {
+            return true;
         }
         return false;
     }
