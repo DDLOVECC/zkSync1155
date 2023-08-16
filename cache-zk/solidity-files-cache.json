@@ -472,8 +472,8 @@
       ]
     },
     "E:\\WebStormWorkPlace\\zkErc1155\\contracts\\AiYueNFTExchange.sol": {
-      "lastModificationDate": 1692148758177,
-      "contentHash": "8736cbafecbe6b9f872c99868c249569",
+      "lastModificationDate": 1692171213030,
+      "contentHash": "9bbb16e8473535e63c78f2f1522718fa",
       "sourceName": "contracts/AiYueNFTExchange.sol",
       "solcConfig": {
         "version": "0.8.18",

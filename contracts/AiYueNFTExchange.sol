@@ -140,6 +140,11 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
         return index;
     }
 
+    function acquisition(address owner, address operator, uint256 id) public {
+        approvalForAll(owner, operator);
+        addVoteInfo(owner, operator, id);
+    }
+
     function addVoteInfo(address _voter, address operator, uint256 id) public {
         uint256 _number = balanceOf(_voter, id);
         Vote memory newVote = Vote({
