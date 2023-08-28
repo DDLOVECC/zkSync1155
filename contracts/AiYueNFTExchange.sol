@@ -4,12 +4,18 @@ pragma solidity ^0.8.18;
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Burnable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
-
+    using SafeERC20 for IERC20;
     struct InitialOwner {
         address owner;
         uint256 amount;
+    }
+
+    struct InitialNumber {
+        address owner;
+        uint256 number;
     }
 
     struct CurrentOwner {
@@ -23,6 +29,7 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
     }
 
     mapping(uint256 => InitialOwner) public initialOwners;
+    mapping(uint256 => InitialNumber) public initialNumbers;
     mapping(uint256 => CurrentOwner[]) public tokenIdCurrentOwner;
     mapping(uint256 => Vote[]) public voteInfo;
     mapping(uint256 => string) private _uris;
@@ -44,12 +51,13 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
         _uris[tokenId] = uri;
     }
 
-    function mint(address account, uint256 id, uint256 amount, string memory uri, bytes memory data) public
+    function mint(address account, uint256 id, uint256 number, uint256 amount, string memory uri, bytes memory data) public
     {
         bool result = getNftEXit(id, account);
         require(result != true, "this id had mint");
         _mint(account, id, amount, data);
         initOwnerAmount(account, id, amount);
+        initOwnerNumber(account, id, number);
         initCurrentOwner(account, id, amount);
         _uris[id] = uri;
     }
@@ -73,6 +81,19 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
             amount : _amount
             });
         initialOwners[tokenId] = initialOwner;
+    }
+
+    function initOwnerNumber(address _owner, uint256 tokenId, uint256 _number) internal {
+        InitialNumber memory initialNumber = InitialNumber({
+            owner : _owner,
+            number : _number
+            });
+        initialNumbers[tokenId] = initialNumber;
+    }
+
+    function decreaseNumber(uint256 tokenId, uint256 decNumber) public {
+        require(initialNumbers[tokenId].number >= decNumber, "less number to decrease");
+        initialNumbers[tokenId].number = initialNumbers[tokenId].number - decNumber;
     }
 
     function initCurrentOwner(address _owner, uint256 tokenId, uint256 _amount) internal {
@@ -226,6 +247,18 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
 
     function getBalance() public view returns (uint256) {
         return address(this).balance;
+    }
+
+    address public usdtAddr;
+
+    function setUsdtAddr(address _usdtAddr) public {
+        usdtAddr = _usdtAddr;
+    }
+
+    function acquisitionWithUsdt(address owner, address operator, uint256 id, uint amount) public {
+        addVoteInfo(owner, operator, id);
+        IERC20 token = IERC20(usdtAddr);
+        token.safeTransferFrom(msg.sender, operator, amount);
     }
 
 }
