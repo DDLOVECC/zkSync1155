@@ -48,4 +48,6 @@ npx hardhat verify --network zkTestnet 0x27E9E3B45727057A9EF87e6f17880fE1CD9b8Da
 npx hardhat verify --network zkTestnet 0x9FFdA5317F2D63A7F75538BA80cF2514A0695E06 TAIXUMARKET TTNFT
 20230828 下午
 npx hardhat verify --network zkTestnet 0x713DD72a42174Cd59d6dd475aEA8a83C77362F3a TAIXUMARKET TTNFT
+20230829
+npx hardhat verify --network zkTestnet 0x7c73cFf059517E7Dfff2Cf8C78eacb7049AAF944 TAIXUMARKET TTNFT
 ```

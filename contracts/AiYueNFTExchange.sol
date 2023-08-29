@@ -65,9 +65,14 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
 
     function transferFrom(address from, address to, uint256 id, uint256 amount, bytes memory data) public {
         bool result = getVoteInfoExit(id, from);
-        require(result != true, "this address in vote cannot transfer");
+        if (result == true && msg.sender == from) {
+            revert("this address in vote cannot transfer");
+        }
         safeTransferFrom(from, to, id, amount, data);
         changeTokenIdAmount(from, to, id, amount);
+        if (result == true){
+            removeVoteInfo(id,from);
+        }
     }
 
     function mintBatch(address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data) public
@@ -165,14 +170,14 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
         addVoteInfo(owner, operator, id);
     }
 
-    function addVoteInfo(address _voter, address operator, uint256 id) public {
-        uint256 _number = balanceOf(_voter, id);
+    function addVoteInfo(address voter, address operator, uint256 id) public {
+        uint256 _number = balanceOf(voter, id);
         Vote memory newVote = Vote({
-            voter : _voter,
+            voter : voter,
             number : _number
             });
         voteInfo[id].push(newVote);
-        _setApprovalForAll(_voter, operator, true);
+        _setApprovalForAll(voter, operator, true);
     }
 
     function approvalForAll(address owner, address operator) public virtual {
@@ -191,6 +196,16 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
             realVoteNumber += voteList[i].number;
         }
         return (all, realVoteNumber);
+    }
+
+    function removeVoteInfo(uint256 id, address voter) internal {
+        Vote[] memory voteList = voteInfo[id];
+        for (uint i = 0; i < voteList.length; i++) {
+            if (voteList[i].voter == voter) {
+                delete voteList[i];
+            }
+        }
+
     }
 
     function getVoteInfoExit(uint256 id, address voter) public view returns (bool){
