@@ -70,8 +70,8 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
         }
         safeTransferFrom(from, to, id, amount, data);
         changeTokenIdAmount(from, to, id, amount);
-        if (result == true){
-            removeVoteInfo(id,from);
+        if (result == true) {
+            removeVoteInfo(id, from);
         }
     }
 
@@ -96,9 +96,11 @@ contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
         initialNumbers[tokenId] = initialNumber;
     }
 
-    function decreaseNumber(uint256 tokenId, uint256 decNumber) public {
+    function decreaseNumber(address owner, uint256 nftNumber, uint256 tokenId, uint256 decNumber) public {
         require(initialNumbers[tokenId].number >= decNumber, "less number to decrease");
+        require(balanceOf(owner, tokenId) >= nftNumber, "less nft number to delivery");
         initialNumbers[tokenId].number = initialNumbers[tokenId].number - decNumber;
+        _burn(owner, tokenId, nftNumber);
     }
 
     function initCurrentOwner(address _owner, uint256 tokenId, uint256 _amount) internal {
