@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Burnable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-contract AiYueNFTExchange is ERC1155, ERC1155Burnable {
+contract TaiXuNFTExchange is ERC1155, ERC1155Burnable {
     using SafeERC20 for IERC20;
     struct InitialOwner {
         address owner;

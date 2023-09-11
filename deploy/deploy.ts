@@ -7,20 +7,20 @@ import {Deployer} from "@matterlabs/hardhat-zksync-deploy";
 const PRI_KEY = fs.readFileSync(".secret").toString()
 // An example of a deploy script that will deploy and call a simple contract.
 export default async function (hre: HardhatRuntimeEnvironment) {
-    console.log(`Running deploy script for the AiYueNFTExchange contract`);
+    console.log(`Running deploy script for the TaiXuNFTExchange contract`);
 
     // Initialize the wallet.
     const wallet = new Wallet(PRI_KEY);
 
     // Create deployer object and load the artifact of the contract you want to deploy.
     const deployer = new Deployer(hre, wallet);
-    const artifact = await deployer.loadArtifact("AiYueNFTExchange");
+    const artifact = await deployer.loadArtifact("TaiXuNFTExchange");
 
     // Estimate contract deployment fee
     // const greeting = "Hi there!";
     // const deploymentFee = await deployer.estimateDeployFee(artifact, [greeting]);
-    const name = "TAIXUMARKET";
-    const symbol = "TTNFT";
+    const name = "TaiXuDEX";
+    const symbol = "TaiXuNFT";
     const deploymentFee = await deployer.estimateDeployFee(artifact, [name, symbol]);
 
     // OPTIONAL: Deposit funds to L2
